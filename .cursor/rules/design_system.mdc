@@ -1,0 +1,97 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+## 1. Brand Colors
+
+| Name             | HEX       | RGB         | Usage |
+|------------------|-----------|-------------|-------|
+| **Signal Orange**| `#FF7400` | 255,116,0   | Primary CTAs, key highlights, important badges, active states, critical KPIs. Avoid large background fills. |
+| **Deep Navy**    | `#0B1F8B` | 11,31,139   | Brand background, hero sections, headers/footers, nav bars, primary typography on light backgrounds. |
+| **Concrete Gray**| `#F2FKF7` | 242,252,247 | Neutral section backgrounds, cards, form fields, subtle separation between UI blocks. |
+| **Charcoal**     | `#102830` | 16,40,48    | Primary text color, icons, dark UI elements, dividers, outlines. |
+| **Emerald**      | `#1F4F43` | 31,79,67    | Success/positive states, environmental KPIs, secondary chart accents. |
+
+---
+
+## 2. Typography
+
+**Primary Headline Font:** *Space Grotesk* — Bold, wide tracking for impact  
+**Body/UI Font:** *Inter* — Regular for paragraphs, Medium/SemiBold for labels & UI elements  
+
+**Font Sizes (web defaults):**
+- H1: 48–64px (hero)
+- H2: 36–48px
+- H3: 24–32px
+- Body: 16–18px
+- Small text / captions: 14px
+
+**Line height:**
+- Headings: 110–120%
+- Body: 140–160%
+
+---
+
+## 3. Spacing & Layout
+- **Grid system:** 12-column, 80–120px max content width, 24px gutter  
+- **Spacing scale:** 4px increments (4, 8, 12, 16, 24, 32, 48, 64)  
+- **Section padding:** 64–96px top/bottom for desktop, 32–48px mobile  
+
+---
+
+## 4. Buttons
+
+**Primary (Signal Orange)**
+- Background: `#FF7400`
+- Text: White (`#FFFFFF`)
+- Hover: Darker orange (`#E56700`)
+- Border radius: 8px
+- Padding: 12px 24px
+
+**Secondary (Outline)**
+- Border: 2px Solid `#0B1F8B`
+- Text: `#0B1F8B`
+- Hover: Background `#EAF0FF`
+
+**Disabled**
+- Background: `#E0E0E0`
+- Text: `#888888`
+
+---
+
+## 5. Status Colors
+
+| Status  | Color        | HEX       | Usage |
+|---------|--------------|-----------|-------|
+| Success | Emerald      | `#1F4F43` | Confirmations, passed checks |
+| Warning | Orange Tint  | `#FFB266` | Warnings, low-priority alerts |
+| Error   | Red Accent   | `#D64545` | Errors, failed checks |
+| Info    | Deep Navy    | `#0B1F8B` | Informational messages |
+
+---
+
+## 6. Components
+- **Cards:** White or Concrete Gray background, 8–16px corner radius, subtle shadow (`0 2px 6px rgba(0,0,0,0.08)`)
+- **Forms:**
+  - Labels: Charcoal, 14px, Medium
+  - Input borders: `#CCCCCC` default, Signal Orange on focus
+- **Navigation:** Deep Navy background, white text, active item underlined in Signal Orange
+- **Tables:** Zebra row striping with Concrete Gray, header row in Deep Navy with white text
+
+---
+
+## 7. Accessibility
+- Minimum contrast ratio: **4.5:1** for body text, **3:1** for large text/icons
+- All interactive elements must have visible focus states
+- Color not to be used as sole means of conveying information
+
+---
+
+## 8. Assets
+- **Logo usage:**
+  - Primary logo in white over Deep Navy or in Deep Navy over white backgrounds
+  - Maintain 16px padding minimum around logo
+- **Icon style:** Thin-line, rounded corners, consistent stroke weight (2px)
+- **Imagery:** Real construction photography with navy-tinted overlay; avoid stocky, overly staged shots

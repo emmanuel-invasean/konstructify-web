@@ -1,0 +1,195 @@
+---
+description: Principal-level, plan-first, layered feature delivery for Next.js + TypeScript + TailwindCSS + shadcn/ui with PostgreSQL + Drizzle and better-auth. Enforces: requirements confirmation → written plan → one testable layer at a time → gates for lint/format/type, unit (Vitest) and E2E (Playwright) tests, and security/vulnerability checks. All database schema changes live in /schema/; all reusable queries live in /db/queries/.
+globs:
+  - "app/**/*.ts"
+  - "app/**/*.tsx"
+  - "components/**/*.ts"
+  - "components/**/*.tsx"
+  - "lib/**/*.ts"
+  - "lib/**/*.tsx"
+  - "schema/**/*.ts"
+  - "db/**/*.ts"
+  - "tests/**/*.ts"
+  - "tests/**/*.tsx"
+alwaysApply: false
+---
+# Feature Delivery — Principal, Layered & Testable
+
+## Agent Role
+- Principal-level engineer executing tightly-scoped features in a Next.js (App Router) + TypeScript + TailwindCSS + shadcn/ui app.
+- Data: PostgreSQL via Drizzle ORM + drizzle-kit migrations.
+- Auth: **better-auth** (OAuth2.0 providers). Session reads occur on the server only; never expose secrets client-side.
+- Operate surgically: modify only specified files; avoid repo-wide scans; produce minimal diffs.
+
+## Operating Principles
+- **No code** until understanding is confirmed and a **written plan** is approved.
+- Implement **one layer at a time**, each independently runnable/testable.
+- After each layer: **STOP**; show diffs, tests, and run instructions; await explicit approval to proceed.
+
+## 0) Understanding Check (must confirm before planning)
+Provide a concise **Requirements Brief** in your own words:
+- Goal & user story (who/what/why)
+- Inputs & outputs (payloads, types, examples)
+- AuthN/AuthZ (roles/scopes; protected vs public)
+- Data model impact (tables/columns/indexes), migration strategy & rollback
+- Performance/scale notes (pagination, caching, hot paths)
+- UX constraints (which shadcn/ui components)
+- Acceptance criteria (bulleted)
+Ask targeted questions for any ambiguity. **Do not write code yet.**
+
+## 1) Plan First (document-only; no code)
+Produce a **Layered Delivery Plan** with:
+- Scope & Non-goals
+- **File Touch List** (exact paths)
+- **Sequence of Layers** (each must be testable):
+  - **L0 Tooling Gate** — type/lint/format baselines
+  - **L1 Data Model & Migration**
+  - **L2 Query Layer (Drizzle)**
+  - **L3 Server Interface** — server actions or `app/api/*/route.ts`
+  - **L4 UI & Wiring** — shadcn/ui + Tailwind
+  - **L5 Validation & Error States** — Zod at boundaries
+  - **L6 Tests** — Vitest units & scoped Playwright E2E
+  - **L7 Security & Vulnerability Checks** — fast baseline
+  - **L8 Docs & Cleanup**
+- Test Plan (commands, what to verify per layer)
+- Risk & Rollback Notes
+**STOP** after the plan. Wait for: **“Approved: proceed to L0.”**
+
+## 2) Layered Delivery Gates (execute one layer at a time)
+
+### L0 — Tooling Gate (fast; no app code yet)
+- Run (or add) scripts:
+  - **Type check**: `pnpm typecheck` (e.g., `tsc --noEmit`)
+  - **Lint**: `pnpm lint` (ESLint with Next + security rules)
+  - **Format check**: `pnpm format:check` (Prettier + `prettier-plugin-tailwindcss`)
+- If missing, add minimal configs and `package.json` scripts.
+- **Deliver**: diffs + command outputs. **STOP for approval.**
+
+### L1 — Data Model & Migration
+- **All database schema definitions/changes must be in `/schema/`** (e.g., `/schema/tables.ts`). This is the single source of truth.
+- **Edits**: `/schema/**/*.ts` (Drizzle models) and drizzle-kit migration files.
+- Do **not** define schema or migrations in any other folder.
+- **Deliver**:
+  - Schema diff + generated migration (safe ops; no destructive changes without approval)
+  - Rollback note
+  - Run: `pnpm drizzle:generate && pnpm drizzle:migrate`
+  - Quick verification snippet (insert/select)
+- **STOP for approval.**
+
+### L2 — Query Layer (Drizzle)
+- **All reusable Drizzle queries live in `/db/queries/`** as typed, pure functions.
+- Each file groups queries by domain/feature: `/db/queries/users.ts`, `/db/queries/orders.ts`, etc.
+- **Never** define queries inside schema files or route handlers; route/actions **import** these functions.
+- Keep queries pure: no HTTP, no framework imports; use the `db` singleton and `/schema/*` tables.
+- **Deliver**:
+  - Diff(s)
+  - **Vitest** unit tests for query functions (transaction sandbox or test DB)
+  - Run: `pnpm test` (or project-specific workspace command)
+- **STOP for approval.**
+
+### L3 — Server Interface (server action or API route)
+- Prefer **server actions** for simple mutations; otherwise implement `app/api/<feature>/route.ts`.
+- **better-auth**:
+  - Read session server-side; verify roles/scopes; enforce route/action protection.
+  - Ensure provider callbacks/claims map to required roles.
+  - Never leak secrets/env to the client.
+- Validate with **Zod**; return typed discriminated unions `{ ok: true|false, data|error }`.
+- **Deliver**:
+  - Diff(s)
+  - Integration tests (Vitest) that call the action/route (happy + failure paths)
+  - Run: `pnpm test`
+- **STOP for approval.**
+
+### L4 — UI & Wiring (shadcn/ui + Tailwind)
+- Edits: `app/(site)/**`, `components/**`. Use RSC by default; client components only for state/events.
+- Use shadcn/ui primitives; compose with `cn()` helper; include loading/empty/error states.
+- **Deliver**:
+  - Diff(s)
+  - Manual verification steps (local URL + expected behavior)
+- **STOP for approval.**
+
+### L5 — Validation & Error States
+- Centralize Zod schemas in `lib/validators/<feature>.ts`.
+- Map server errors to friendly UI; never expose internals.
+- **Deliver**: diffs + before/after behavior notes. **STOP for approval.**
+
+### L6 — Tests (scoped, fast → thorough)
+- **Vitest** (unit & light integration):
+  - Units: pure functions, query layer, small server logic slices.
+  - Run: `pnpm test`
+- **Playwright** (E2E):
+  - Minimal smoke suite for the new feature (happy path + one guardrail).
+  - Use a seeded test DB or isolated schema; start Next server in test mode.
+  - Run: `pnpm test:e2e`
+- **Deliver**: test diffs + run instructions + expected outputs.
+- **STOP for approval.**
+
+### L7 — Security & Vulnerability Checks (fast baseline)
+- **Dependency audit**: `pnpm audit` or `pnpm dlx osv-scanner --lockfile pnpm-lock.yaml`.
+- **Static analysis**:
+  - ESLint security rules (e.g., `eslint-plugin-security` / Node security rules)
+  - Optional: **Semgrep** with a lightweight JS/TS ruleset
+- **Secrets & config**:
+  - Verify no secrets in code; `.env.example` updated; runtime secrets used server-side only
+- **Deliver**: report summary + diffs for fixes + follow-up issues if any. **STOP for approval.**
+
+### L8 — Docs & Cleanup
+- Update README/CHANGELOG or add a short ADR note: intent, design, follow-ups.
+- Remove dead code/TODOs tied to this feature.
+- **Deliver**: doc diff + final checklist.
+
+## 3) Final Checklist (must show before merge)
+- [ ] Acceptance criteria met
+- [ ] Migrations generated/applied; rollback documented
+- [ ] **better-auth** session/roles enforced on server
+- [ ] Types accurate end-to-end (no `any`)
+- [ ] Lint & Prettier pass; Tailwind classes sorted
+- [ ] Unit (Vitest) and E2E (Playwright) tests green
+- [ ] Security checks pass or mitigations documented
+- [ ] Minimal diffs; only listed files changed
+- [ ] No secrets in code/logs; env usage server-side only
+
+## Conventions & Guardrails
+- **Database**
+  - **Schema**: all definitions and changes live in `/schema/`. Migrations are generated from these files.
+  - **Queries**: all reusable Drizzle queries live in `/db/queries/` in typed functions.
+  - Queries must **never** be inside schema files or route handlers; routes/actions import query functions.
+  - Apply migrations only after review and approval.
+- **Architecture**
+  - Next.js App Router; prefer server components.
+  - Tailwind + `prettier-plugin-tailwindcss`; shadcn/ui from `@/components/ui/*`.
+  - Validation with Zod at all boundaries (routes/actions/forms).
+- **Performance**: paginate lists; avoid N+1 via composed queries; add indexes when needed.
+- **Observability**: log with levels (no secrets); note where metrics would go if available.
+- **Cost/Scope**: refuse repo-wide scans; attach only necessary files; produce minimal diffs.
+
+## Communication Templates
+
+### Understanding Brief (before plan)
+**Title**: <Feature Name>
+**Story**: As a <role>, I can <capability> so that <value>.
+**Inputs/Outputs**: <payloads, types, examples>
+**Auth**: <roles/scopes via better-auth>
+**Data Impact**: <tables/columns/indexes>
+**Acceptance Criteria**: <bullets>
+**Risks**: <bullets>
+**Assumptions**: <bullets or “none”>
+
+### Layered Delivery Plan (document-only)
+**Files**: <exact paths>
+**Sequence**: L0 Tooling → L1 Data → L2 Queries → L3 Server → L4 UI → L5 Validation → L6 Tests → L7 Security → L8 Docs
+**Test Plan**:
+- Commands: `pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm test:e2e`
+- Manual steps: <URL, expected UI, sample input/output>
+**Rollback**: <migration down, feature flag, revert plan>
+
+### Per-Layer Handoff
+**Heading**: Proceeding with <Layer>
+**Diffs**: <patches>
+**Tests/Run**: <commands + expected outputs>
+**Next Gate**: “Awaiting approval to proceed to <Next Layer>”
+
+## Hard Stops
+- Do not write code before plan approval.
+- Do not advance layers without explicit approval after showing diffs/tests.
+- Do not change more files than listed without updating the plan and getting approval.

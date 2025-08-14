@@ -1,0 +1,128 @@
+---
+description: Enforces the design system for all UI work: shadcn/ui + TailwindCSS with a strict mobile-first approach, cn() for class merging, accessibility standards, and consistent theming. Disallows ad-hoc styles and unapproved components.
+globs: 
+- "app/\*\*/\*.tsx"
+- "components/\*\*/\*.tsx"
+- "components/\*\*/\*.ts"
+- "lib/components/\*\*/\*.tsx"
+alwaysApply: false
+---
+
+# Design System — shadcn/ui + Tailwind (Mobile-First)
+
+## Principles
+
+- **Mobile-first always**: implement small-screen base styles first; layer breakpoints with `sm:`, `md:`, `lg:`, `xl:`.
+- Use only approved **shadcn/ui** components from `@/components/ui/*` or team-approved wrappers in `components/`.
+- All styling via **Tailwind** utilities; no inline `style={}` except for documented exceptions.
+- Always use `cn()` helper for conditional/merged classes.
+- Respect theming (light/dark) via tokens/CSS vars; never hardcode brand colors.
+
+## Composition & Layout
+
+- Start with base mobile layout and spacing; then add responsive classes.
+- Use container/grid/flex utilities; avoid absolute positioning unless required.
+- Spacing/typography must use Tailwind scale (e.g., `p-4`, `gap-3`, `text-sm`).
+- Prefer semantic HTML elements wrapped by DS components (e.g., `Button`, `Card`, `Dialog`).
+
+## Components & Imports
+
+- Import shadcn primitives from `@/components/ui/*` only.
+- Wrap complex primitives in local DS components when setting defaults (variant/size) or shared patterns (forms, dialogs).
+- Use the approved icon set (e.g., `lucide-react`).
+
+## Accessibility
+
+- All interactive elements must be keyboard navigable; manage focus state.
+- Provide ARIA labels/roles where necessary; ensure label ↔ control association.
+- Maintain contrast ratios in both themes; do not remove focus outlines without replacement.
+
+## Styling Rules
+
+- Use `cn()` for any conditional class logic.
+- Avoid magic numbers; use Tailwind tokens or extend the Tailwind config.
+- Prefer utilities over custom CSS; if CSS is necessary, keep it in co-located module files and document why.
+
+## Prohibited
+
+- Third-party UI libraries without approval.
+- Duplicating DS functionality with raw elements (e.g., `<button>` instead of `Button`).
+- Inline styles and hardcoded colors/shadows that bypass the design tokens.
+
+## Mobile-First Examples
+
+```tsx
+<div className="p-4 sm:p-6 lg:p-8">
+  <Button size="sm" className="w-full sm:w-auto">Continue</Button>
+</div>
+
+<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <Card />
+  <Card />
+  <Card />
+</div>
+```
+
+# UI Completion Checklist (Mobile-First, shadcn/ui, Tailwind)
+
+## 1. Mobile-first & responsiveness
+- [ ] **Start mobile**: implement base layout at 360–390px width. Verify in devtools using iPhone/Pixel viewports.
+- [ ] **Add breakpoints only after base works**: `sm:` / `md:` / `lg:` layered progressively.
+- [ ] **No horizontal scroll** on narrow screens: `document.documentElement.scrollWidth === window.innerWidth`.
+- [ ] **Readable text & tap targets**: body text `text-sm`/`text-base`; buttons ≥44×44px.
+
+## 2. Components & composition
+- [ ] Use only approved **shadcn/ui** components or wrappers from `@/components/ui/*`.
+- [ ] Prefer **composition**: wrap primitives to set defaults rather than duplicating code.
+- [ ] No unapproved UI libraries.
+
+## 3. Styling & tokens
+- [ ] Tailwind utilities only; merge conditional classes with `cn()`.
+- [ ] Use Tailwind spacing/typography scales (e.g., `gap-4`, `text-sm`).
+- [ ] Colors/shadows from theme tokens or CSS vars; no hardcoded hex.
+- [ ] Prettier with Tailwind plugin sorts classnames (`pnpm format:check`).
+
+## 4. Accessibility
+- [ ] Logical tab order; visible focus states; modals/sheets trap focus & close on `Esc`.
+- [ ] Labels properly associated with controls; use DS `Form` patterns.
+- [ ] Appropriate ARIA roles; no `div`-based buttons.
+- [ ] WCAG AA contrast met in both light & dark themes.
+- [ ] Animations respect `prefers-reduced-motion`.
+
+## 5. Theming
+- [ ] Works in light and dark mode.
+- [ ] Icons and focus outlines clearly visible in both.
+
+## 6. Performance & platform
+- [ ] Use server components by default; `"use client"` only when necessary.
+- [ ] Avoid heavy client-only imports in server components.
+- [ ] Use `next/image` with width/height; paginate or virtualize large lists.
+
+## 7. States & UX polish
+- [ ] Implement loading, empty, and error states.
+- [ ] Hover/active/focus/disabled states match DS.
+- [ ] No stray `console.log` or TODOs.
+
+## 8. Security
+- [ ] No `dangerouslySetInnerHTML` without sanitization & explicit approval.
+- [ ] No secrets in client-side code.
+
+## 9. Testing
+- [ ] **Vitest** component/unit tests for logic-heavy parts.
+- [ ] **Playwright** mobile viewport smoke tests (happy path + 1 guardrail).
+- [ ] Optional: **axe-core** accessibility checks.
+
+## 10. Lint/format/type gates
+- [ ] Typecheck: `pnpm typecheck`
+- [ ] Lint: `pnpm lint`
+- [ ] Prettier check: `pnpm format:check`
+
+## 11. Documentation
+- [ ] Document any new/changed wrapper components (usage & variants).
+- [ ] Attach a mobile screenshot + reproduction steps in PR description.
+
+## Notes for Agents
+
+- If a DS component is missing, propose adding it as a wrapper with defaults/docs.
+- For forms, prefer DS patterns and consistent spacing.
+- When unsure on spacing/typography, default to Tailwind scale (`text-sm`, `leading-6`, `space-y-4`).
