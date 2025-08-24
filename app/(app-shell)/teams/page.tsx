@@ -8,16 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default async function TeamsPage() {
-  const session = await auth.api.getSession({
-    headers: headers() as unknown as Headers,
-  });
-
-  if (!session?.session) {
-    redirect("/sign-in");
-  }
-
   return (
-    <main className="min-h-screen bg-[var(--concrete-gray)]">
+    <main className="min-h-screen">
       <section className="mx-auto w-full space-y-6 px-6 py-12">
         <h1 className="font-display text-3xl leading-tight text-[var(--deep-navy)] md:text-4xl">
           Teams
