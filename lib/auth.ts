@@ -9,9 +9,9 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    sendResetPassword: async ({user, url, token}, request) => {
-      console.log("sendResetPassword", token);
-    }
+    sendResetPassword: async ({ token }) => {
+      console.warn("sendResetPassword", token);
+    },
   },
   plugins: [
     organization({

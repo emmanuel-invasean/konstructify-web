@@ -11,8 +11,12 @@ import { generatePassword } from "@/lib/utils";
 export type SetupInput = z.infer<typeof organizationSetupSchema>;
 
 // Re-export as a new async function for backward compatibility
-export async function addMemberToOrganization(input: import("./member").AddMemberInput) {
-  return import("./member").then(({ addMemberToOrganization }) => addMemberToOrganization(input));
+export async function addMemberToOrganization(
+  input: import("./member").AddMemberInput,
+) {
+  return import("./member").then(({ addMemberToOrganization }) =>
+    addMemberToOrganization(input),
+  );
 }
 
 /**
@@ -21,9 +25,7 @@ export async function addMemberToOrganization(input: import("./member").AddMembe
  * 2. Creates initial team
  * 3. Processes member invitations
  */
-export async function setupOrganization(
-  input: SetupInput,
-): Promise<
+export async function setupOrganization(input: SetupInput): Promise<
   | {
       ok: true;
       data: {

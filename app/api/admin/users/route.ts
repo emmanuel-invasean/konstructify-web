@@ -13,9 +13,12 @@ const AdminUserSignupSchema = z.object({
 export async function POST(req: Request) {
   const secret = process.env.ADMIN_API_SECRET;
   if (!secret) {
-    return new Response("Server misconfigured: missing ADMIN_API_SECRET", {
-      status: 500,
-    });
+    return new Response(
+      "Server misconfigured: ADMIN_API_SECRET environment variable not set",
+      {
+        status: 500,
+      },
+    );
   }
 
   const provided = req.headers.get("x-admin-secret");

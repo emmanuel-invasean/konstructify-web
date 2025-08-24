@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Teams — Konstructify",
 };
 
-export default async function TeamsPage() {
+export default function TeamsPage() {
   return (
     <main className="min-h-screen">
       <section className="mx-auto w-full space-y-6 px-6 py-12">
@@ -15,7 +12,7 @@ export default async function TeamsPage() {
           Teams
         </h1>
         <p className="text-base text-[var(--charcoal)]/80">
-          Organize your teams and members.
+          Manage your teams.
         </p>
       </section>
     </main>

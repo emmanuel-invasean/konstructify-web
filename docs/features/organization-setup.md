@@ -72,6 +72,7 @@ The system supports the following roles (defined in the database schema):
 ## Technical Implementation
 
 ### Server Action Flow
+
 1. Validates input using Zod schemas
 2. Creates user account with generated password
 3. Creates organization with provided details
@@ -80,6 +81,7 @@ The system supports the following roles (defined in the database schema):
 6. Returns success/error response with created entities
 
 ### Form State Management
+
 - Uses React Hook Form with Zod resolver
 - Dynamic member array management
 - Real-time validation feedback
@@ -104,6 +106,7 @@ The system supports the following roles (defined in the database schema):
 ## Error Handling
 
 The system provides comprehensive error handling:
+
 - Validation errors with specific field feedback
 - Server action errors with user-friendly messages
 - Network and unexpected error fallbacks

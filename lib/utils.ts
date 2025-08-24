@@ -13,13 +13,14 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function generatePassword(): string {
   const length = 16;
-  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+  const charset =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
   const bytes = randomBytes(length);
-  
+
   let password = "";
   for (let i = 0; i < length; i++) {
     password += charset[bytes[i] % charset.length];
   }
-  
+
   return password;
 }

@@ -65,7 +65,7 @@ export async function createUser(input: CreateUserInput): Promise<UserResult> {
 
     return {
       success: true,
-      data: ((userData as any)?.user || userData) as unknown as User,
+      data: (userData?.user || userData) as User,
     };
   } catch (error) {
     console.error("Failed to create user:", error);
@@ -127,7 +127,7 @@ export async function getUserByEmail(email: string): Promise<UserResult> {
     // This would typically be implemented by querying the database directly
     // or using a search API if available
 
-    console.log(`Checking if user exists with email: ${email}`);
+    console.warn(`Checking if user exists with email: ${email}`);
 
     // TODO: Implement when Better Auth provides a user lookup method
     // For now, return a placeholder response

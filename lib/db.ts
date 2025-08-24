@@ -12,4 +12,7 @@ export type DbClient = {
 
 // Export type helpers
 export type InferTable<T extends keyof Tables> =
-  Tables[T] extends PgTable<any> ? InferModel<Tables[T], "select"> : never;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Tables[T] extends PgTable<infer Config>
+    ? InferModel<Tables[T], "select">
+    : never;

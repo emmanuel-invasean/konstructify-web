@@ -40,7 +40,10 @@ export const teamSchema = z.object({
 });
 
 export const userSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name cannot exceed 100 characters"),
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name cannot exceed 100 characters"),
   email: z.string().email("Please enter a valid email address"),
 });
 

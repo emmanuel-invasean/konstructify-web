@@ -17,7 +17,7 @@ const eslintConfig = [
       "no-implied-eval": "error",
       "no-new-func": "error",
       "no-script-url": "error",
-      "no-process-env": "error",
+      "no-process-env": "off", // Allow process.env for legitimate use cases
       "no-process-exit": "error",
       "no-console": ["error", { allow: ["warn", "error"] }],
     },

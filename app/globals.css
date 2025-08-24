@@ -7,11 +7,20 @@
   /* Brand colors */
   --signal-orange: #ff7400;
   --signal-orange-hover: #e56700;
-  --deep-navy: #0b1f8b;
+  --deep-navy: #1e40af; /* Updated: lighter blue with better contrast */
+  --deep-navy-light: #3b82f6; /* New: lighter blue for hover states */
+  --deep-navy-hover: #1d4ed8; /* New: hover variant with good contrast */
   /* 242,252,247 per spec */
   --concrete-gray: #f2fcf7; /* Note: custom neutral for sections */
   --charcoal: #102830;
   --emerald: #1f4f43;
+
+  /* New semantic colors for better contrast */
+  --accent-blue: #2563eb; /* Better contrast than deep-navy */
+  --accent-blue-light: #3b82f6; /* Light variant for backgrounds */
+  --accent-blue-hover: #1d4ed8; /* Hover state with good contrast */
+  --accent-gray: #64748b; /* Neutral accent for subtle interactions */
+  --accent-gray-light: #94a3b8; /* Light variant for backgrounds */
 
   /* Base palette */
 
@@ -87,7 +96,13 @@
   --color-primary-foreground: #ffffff;
   --color-muted: var(--concrete-gray);
   --color-muted-foreground: var(--charcoal);
-  --color-accent: var(--deep-navy);
+  --color-accent: var(--accent-blue); /* Updated: better contrast */
+  --color-accent-light: var(--accent-blue-light); /* New: light variant */
+  --color-accent-hover: var(--accent-blue-hover); /* New: hover variant */
+  --color-accent-neutral: var(--accent-gray); /* New: neutral accent */
+  --color-accent-neutral-light: var(
+    --accent-gray-light
+  ); /* New: neutral light variant */
   --color-success: var(--emerald);
 
   --font-sans: var(--font-inter);
@@ -177,26 +192,27 @@ h6,
 .btn-primary:focus-visible {
   outline: 3px solid #ffffff;
   outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(11, 31, 139, 0.6);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.6); /* Updated: better contrast */
 }
 .btn-secondary {
   background: transparent;
-  color: var(--deep-navy);
-  border: 2px solid var(--deep-navy);
+  color: var(--accent-blue); /* Updated: better contrast */
+  border: 2px solid var(--accent-blue);
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
 }
 .btn-secondary:hover {
-  background: #eaf0ff;
+  background: var(--accent-blue-light); /* Updated: better hover state */
+  color: #ffffff; /* White text on blue background for better contrast */
 }
 .btn-secondary:focus-visible {
   outline: 3px solid #ffffff;
   outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(11, 31, 139, 0.6);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.6); /* Updated: better contrast */
 }
 
-/* Inverse outline button for dark (Deep Navy) backgrounds */
+/* Inverse outline button for dark backgrounds */
 .btn-secondary-inverse {
   background: transparent;
   color: #ffffff;
@@ -207,7 +223,7 @@ h6,
 }
 .btn-secondary-inverse:hover {
   background: #ffffff;
-  color: var(--deep-navy);
+  color: var(--accent-blue); /* Updated: better contrast */
 }
 .btn-secondary-inverse:focus-visible {
   outline: 3px solid #ffffff;
@@ -220,6 +236,37 @@ h6,
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* New utility classes for better hover states */
+.hover-accent {
+  transition: all 0.2s ease;
+}
+.hover-accent:hover {
+  background: var(--accent-blue-light);
+  color: #ffffff;
+}
+.hover-accent-neutral {
+  transition: all 0.2s ease;
+}
+.hover-accent-neutral:hover {
+  background: var(--accent-gray-light);
+  color: #ffffff;
+}
+
+/* Dropdown and menu hover states */
+.dropdown-hover {
+  transition: background-color 0.2s ease;
+}
+.dropdown-hover:hover {
+  background: var(--accent-blue-light);
+  color: #ffffff;
+}
+
+/* Focus states with better contrast */
+.focus-accent:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
 }
 
 .dark {
@@ -254,6 +301,12 @@ h6,
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Dark mode specific accent colors for better contrast */
+  --deep-navy: #3b82f6; /* Lighter in dark mode for better visibility */
+  --accent-blue: #60a5fa; /* Brighter blue for dark backgrounds */
+  --accent-blue-light: #93c5fd; /* Even lighter for hover states */
+  --accent-blue-hover: #3b82f6; /* Hover state for dark mode */
 }
 
 @layer base {

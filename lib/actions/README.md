@@ -180,11 +180,11 @@ if (currentUser.success) {
 ### Member Management
 
 ```typescript
-import { 
-  addMemberToOrganization, 
+import {
+  addMemberToOrganization,
   inviteMemberToOrganization,
   getOrganizationMembers,
-  updateMemberRole 
+  updateMemberRole,
 } from "@/lib/actions/member";
 
 // Add existing user to organization
@@ -192,7 +192,7 @@ await addMemberToOrganization({
   userId: "user123",
   organizationId: "org456",
   role: "admin",
-  teamId: "team789"
+  teamId: "team789",
 });
 
 // Invite new user by email
@@ -200,7 +200,7 @@ await inviteMemberToOrganization({
   email: "newuser@company.com",
   organizationId: "org456",
   role: "member",
-  teamId: "team789"
+  teamId: "team789",
 });
 
 // Get all organization members
