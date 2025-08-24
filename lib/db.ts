@@ -1,11 +1,15 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
-import schema from "@/schema";
+// This is a client-safe database interface
+// Only contains types and utilities that don't import node-specific modules
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not set");
-}
+import type { InferModel } from "drizzle-orm";
+import type { PgTable } from "drizzle-orm/pg-core";
+import type * as schema from "@/schema";
 
-const pool = new Pool({ connectionString });
-export const db = drizzle(pool, { schema });
+export type Tables = typeof schema;
+export type DbClient = {
+  schema: Tables;
+};
+
+// Export type helpers
+export type InferTable<T extends keyof Tables> =
+  Tables[T] extends PgTable<any> ? InferModel<Tables[T], "select"> : never;
