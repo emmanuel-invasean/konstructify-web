@@ -44,12 +44,15 @@ This directory contains organized server actions for managing organizations, tea
 
 - `addMemberToOrganization(input)` - Add existing user to organization
 - `inviteMemberToOrganization(input)` - Invite user by email
+- `removeMemberFromOrganization(memberIdOrEmail, organizationId)` - Remove member
+- `updateMemberRole(userId, organizationId, role)` - Update member role
+- `getOrganizationMembers(organizationId)` - Get all organization members
 - Types: `Member`, `AddMemberInput`, `InviteMemberInput`, `MemberResult`
 
 **Available Methods:**
 
 - ✅ `addMemberToOrganization` - Working with Better Auth API
-- ✅ `inviteMemberToOrganization` - Custom invitation queueing
+- ✅ `inviteMemberToOrganization` - Custom invitation queueing (placeholder)
 - ✅ `removeMemberFromOrganization` - Working with Better Auth API
 - ✅ `updateMemberRole` - Working with Better Auth API
 - ✅ `getOrganizationMembers` - Working with Better Auth API
@@ -60,16 +63,17 @@ This directory contains organized server actions for managing organizations, tea
 
 - `createUser(input)` - Create new user account with email/password
 - `getCurrentUser()` - Get current authenticated user
+- `getUserByEmail(email)` - Check if user exists by email (placeholder)
 - Types: `User`, `CreateUserInput`, `UserResult`
 
 **Available Methods:**
 
 - ✅ `createUser` - Working with Better Auth API
 - ✅ `getCurrentUser` - Working with Better Auth API
+- ⚠️ `getUserByEmail` - Placeholder (Better Auth API method needed)
 
 **TODO Methods** (when Better Auth API is available):
 
-- `getUserByEmail`
 - `updateUser`
 - `deleteUser`
 - `changePassword`
@@ -81,14 +85,17 @@ This directory contains organized server actions for managing organizations, tea
 **Purpose**: Orchestrates complete organization setup flow
 
 - `setupOrganization(input)` - Creates org + team + invites members
-- Re-exports: `addMemberToOrganization` for backward compatibility
+- `addMemberToOrganization(input)` - Re-export for backward compatibility
 
 **Flow:**
 
-1. Create organization
-2. Create initial team
-3. Process member invitations
-4. Return complete setup result
+1. Create user with generated password
+2. Create organization
+3. Create initial team
+4. Process member invitations
+5. Return complete setup result
+
+**Input Schema**: Uses `organizationSetupSchema` from `@/lib/validators/organization`
 
 ## Usage Examples
 
@@ -98,13 +105,20 @@ This directory contains organized server actions for managing organizations, tea
 import { setupOrganization } from "@/lib/actions/organization-setup";
 
 const result = await setupOrganization({
+  user: { name: "John Doe", email: "john@acme.com" },
   organization: { name: "Acme Corp", slug: "acme" },
   team: { name: "Development" },
   members: [
-    { email: "john@acme.com", role: "admin" },
-    { email: "jane@acme.com", role: "member" },
+    { email: "jane@acme.com", role: "admin" },
+    { email: "bob@acme.com", role: "member" },
   ],
 });
+
+if (result.ok) {
+  console.log("Setup complete:", result.data);
+} else {
+  console.error("Setup failed:", result.error);
+}
 ```
 
 ### Individual Operations
@@ -163,15 +177,48 @@ if (currentUser.success) {
 }
 ```
 
+### Member Management
+
+```typescript
+import { 
+  addMemberToOrganization, 
+  inviteMemberToOrganization,
+  getOrganizationMembers,
+  updateMemberRole 
+} from "@/lib/actions/member";
+
+// Add existing user to organization
+await addMemberToOrganization({
+  userId: "user123",
+  organizationId: "org456",
+  role: "admin",
+  teamId: "team789"
+});
+
+// Invite new user by email
+await inviteMemberToOrganization({
+  email: "newuser@company.com",
+  organizationId: "org456",
+  role: "member",
+  teamId: "team789"
+});
+
+// Get all organization members
+const members = await getOrganizationMembers("org456");
+
+// Update member role
+await updateMemberRole("user123", "org456", "admin");
+```
+
 ## Design Principles
 
 ### 🔒 **Authentication First**
 
-All actions verify user authentication before proceeding
+All actions verify user authentication before proceeding using Better Auth session validation
 
 ### 🎯 **Single Responsibility**
 
-Each file handles one domain (org, team, member)
+Each file handles one domain (org, team, member, user)
 
 ### 🔄 **Consistent Return Types**
 
@@ -179,23 +226,36 @@ Each file handles one domain (org, team, member)
 type Result<T> = { success: true; data: T } | { success: false; error: string };
 ```
 
+**Note**: `setupOrganization` uses `{ ok: true/false }` for backward compatibility
+
 ### 🛡️ **Error Handling**
 
 - Comprehensive try/catch blocks
 - Meaningful error messages
 - Console logging for debugging
+- Input validation using Zod schemas
 
 ### 📝 **Type Safety**
 
 - Full TypeScript support
 - Exported types for all inputs/outputs
-- Integration with validation schemas
+- Integration with validation schemas from `@/lib/validators/organization`
+- Better Auth API type compatibility
 
 ### 🔧 **Better Auth Integration**
 
 - Proper header forwarding for authentication
 - Compatible with Better Auth organization plugin
 - Custom role support with type safety
+- Session-based authentication validation
+
+## Validation Schemas
+
+All actions use Zod validation schemas from `@/lib/validators/organization`:
+
+- **Organization Roles**: `"admin" | "member" | "owner"`
+- **Input Validation**: Name length, email format, slug patterns
+- **Setup Schema**: Complete organization setup validation
 
 ## Migration Notes
 
@@ -205,6 +265,13 @@ type Result<T> = { success: true; data: T } | { success: false; error: string };
 - ✅ Backward compatibility maintained via re-exports
 - ✅ Improved error handling and type safety
 - ✅ Better separation of concerns
+- ✅ Input validation using Zod schemas
+
+### Current Implementation Status
+
+- **Fully Working**: Organization, team, member management
+- **Partially Working**: User invitation system (placeholder implementation)
+- **Placeholder**: `getUserByEmail` (needs Better Auth API method)
 
 ### Future Enhancements
 
@@ -212,3 +279,5 @@ type Result<T> = { success: true; data: T } | { success: false; error: string };
 - Better Auth invitation plugin usage
 - Advanced member management features
 - Organization settings and permissions
+- User profile management
+- Password reset and email verification flows
